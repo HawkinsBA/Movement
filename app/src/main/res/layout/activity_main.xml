@@ -10,7 +10,7 @@
         android:id="@+id/collectButton"
         android:layout_width="195dp"
         android:layout_height="50dp"
-        android:text="Collect"
+        android:text="@string/collect"
         app:layout_constraintBottom_toTopOf="@+id/reviewButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -21,10 +21,11 @@
         android:id="@+id/reviewButton"
         android:layout_width="195dp"
         android:layout_height="50dp"
-        android:text="Review"
+        android:text="@string/review"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/collectButton" />
+
 </android.support.constraint.ConstraintLayout>
