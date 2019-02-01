@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private Button collect;
     private Button review;
     private Button toGPS;
@@ -26,9 +28,16 @@ public class MainActivity extends AppCompatActivity {
         collect = findViewById(R.id.collectButton);
         review = findViewById(R.id.reviewButton);
         // Idea: Need to inflate settings_dialogue.xml and set toGPS through mView or else toGPS is a null-pointer
-        // 2/1/2019 10:33 AM: Something's not working - cannot access onClickListener for toGPS
+        // 2/1/2019 10:33 AM: Something's not working - cannot access onClickListener for toGPS.
+        // 2/1/2019 10:52 AM: After testing with log messages, it doesn't look like toGPS is null after toGPS = mView.findViewById(R.id.settingsConfirm);
         View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
         toGPS = mView.findViewById(R.id.settingsConfirm);
+        if (toGPS.equals(null)){
+            Log.d(TAG, "OOPSIE WOOPSIE!! UwU We made a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this!");
+        } else {
+            Log.d(TAG, "Everything looks fine here, chief.");
+        }
+
 
         review.setOnClickListener(new View.OnClickListener() {
             @Override
