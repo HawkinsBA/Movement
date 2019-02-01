@@ -33,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
         View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
         toGPS = mView.findViewById(R.id.settingsConfirm);
         if (toGPS.equals(null)){
-            Log.d(TAG, "OOPSIE WOOPSIE!! UwU We made a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this!");
+            Log.d(TAG, "Bad");
         } else {
-            Log.d(TAG, "Everything looks fine here, chief.");
+            Log.d(TAG, "Good");
         }
 
 
