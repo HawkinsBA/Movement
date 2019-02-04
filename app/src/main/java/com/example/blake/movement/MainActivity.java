@@ -13,22 +13,18 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final String TAG = "MainActivity";
-    private Button collect;
-    private Button review;
-    private Button toGPS;
-    private Spinner gpsSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        collect = findViewById(R.id.collectButton);
-        review = findViewById(R.id.reviewButton);
-        View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
-        toGPS = mView.findViewById(R.id.settingsConfirm);
+        Button collect = findViewById(R.id.collectButton);
+        Button review = findViewById(R.id.reviewButton);
+        final View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
+        Button toGPS = mView.findViewById(R.id.settingsConfirm);
+
         if (toGPS == null){
             Log.d(TAG, "Bad");
         } else {
@@ -47,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
 
-                gpsSettings = mView.findViewById(R.id.gpsSettings);
+                Spinner gpsSettings = mView.findViewById(R.id.gpsSettings);
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.settings_choices, android.R.layout.simple_spinner_item);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 gpsSettings.setAdapter(adapter);
