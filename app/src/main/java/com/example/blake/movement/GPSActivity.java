@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class GPSActivity extends AppCompatActivity {
+    private static final String TAG = "GPSActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
