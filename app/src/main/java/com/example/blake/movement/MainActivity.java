@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         // 2/1/2019 10:52 AM: After testing with log messages, it doesn't look like toGPS is null after toGPS = mView.findViewById(R.id.settingsConfirm);
         View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
         toGPS = mView.findViewById(R.id.settingsConfirm);
-        if (toGPS.equals(null)){
+        if (toGPS == null){
             Log.d(TAG, "Bad");
         } else {
             Log.d(TAG, "Good");
