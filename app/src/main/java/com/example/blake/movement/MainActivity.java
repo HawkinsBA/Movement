@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         review.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"Review pressed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Review pressed", Toast.LENGTH_SHORT).show();
             }
         });
 
