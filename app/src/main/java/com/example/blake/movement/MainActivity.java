@@ -20,19 +20,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button collect = findViewById(R.id.collectButton);
-        Button review = findViewById(R.id.reviewButton);
+        Button collectButton = findViewById(R.id.collectButton);
+        Button reviewButton = findViewById(R.id.reviewButton);
         final View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
-        Button toGPS =  mView.findViewById(R.id.settingsConfirm);
+        Button toGPSButton =  mView.findViewById(R.id.toGPSButton);
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-        final Spinner gpsSettings = mView.findViewById(R.id.gpsSettings);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.settings_choices, android.R.layout.simple_spinner_item);
+        final Spinner manualOrDefaultSpinner = mView.findViewById(R.id.manualOrDefaultSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.manualOrDefaultArray, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        gpsSettings.setAdapter(adapter);
+        manualOrDefaultSpinner.setAdapter(adapter);
         mBuilder.setView(mView);
-        final AlertDialog settingsDialog = mBuilder.create();
+        final AlertDialog manualOrDefaultDialog = mBuilder.create();
 
-        review.setOnClickListener(new View.OnClickListener() {
+        reviewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "Review pressed", Toast.LENGTH_SHORT).show();
@@ -40,22 +40,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        collect.setOnClickListener(new View.OnClickListener() {
+        collectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                settingsDialog.show();
+                manualOrDefaultDialog.show();
             }
         });
 
-        toGPS.setOnClickListener(new View.OnClickListener() {
+        toGPSButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (gpsSettings.getSelectedItem().toString() == "Default") {
+                if (manualOrDefaultSpinner.getSelectedItem().toString() == "Default") {
                     Intent gpsIntent = new Intent(MainActivity.this, GPSActivity.class);
                     startActivity(gpsIntent);
                 } else {
-                    //TODO: Transition to manual settings activity.
-                    Toast.makeText(MainActivity.this, "Manual", Toast.LENGTH_SHORT).show();
+                    Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(settingsIntent);
                 }
             }
         });

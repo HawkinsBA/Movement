@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="manualOrDefaultArray">
+        <item>Default</item>
+        <item>Manual</item>
+    </string-array>
+
+    <string-array name="mapBackgroundOptionsArray">
+        <item>Classic</item>
+        <item>Silver</item>
+        <item>Retro</item>
+        <item>Dark</item>
+        <item>Night</item>
+        <item>Aubergine</item>
+    </string-array>
+</resources>

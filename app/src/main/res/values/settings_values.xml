@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="settings_choices">
-        <item>Default</item>
-        <item>Manual</item>
-    </string-array>
-</resources>

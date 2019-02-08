@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GPSActivity"></activity>
+        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".GPSActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,9 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyB1PlDTic3uXLypU3pqD5c12O93iI_tslg"/>
+            android:value="AIzaSyB1PlDTic3uXLypU3pqD5c12O93iI_tslg" />
     </application>
 
 </manifest>
