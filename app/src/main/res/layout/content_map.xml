@@ -9,7 +9,7 @@
     tools:showIn="@layout/app_bar_map">
 
     <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView2"
+        android:id="@+id/mapView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="visible"
