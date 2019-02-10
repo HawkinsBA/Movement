@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "Review pressed", Toast.LENGTH_SHORT).show();
-                //TODO: Transition to stored records activity.
+                Intent reviewIntent = new Intent(MainActivity.this, ReviewActivity.class);
+                startActivity(reviewIntent);
             }
         });
 
@@ -50,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         toGPSButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (manualOrDefaultSpinner.getSelectedItem().toString() == "Default") {
-                    Intent gpsIntent = new Intent(MainActivity.this, GPSActivity.class);
-                    startActivity(gpsIntent);
+                if (manualOrDefaultSpinner.getSelectedItem().toString().equals("Default")) {
+                    Intent mapIntent = new Intent(MainActivity.this, MapActivity.class);
+                    startActivity(mapIntent);
                 } else {
                     Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
                     startActivity(settingsIntent);
