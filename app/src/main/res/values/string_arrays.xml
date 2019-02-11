@@ -13,4 +13,16 @@
         <item>Night</item>
         <item>Aubergine</item>
     </string-array>
+
+    <string-array name="pathColorOptionsArray">
+        <item>Blue</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Purple</item>
+        <item>Pink</item>
+        <item>White</item>
+        <item>Black</item>
+    </string-array>
 </resources>
