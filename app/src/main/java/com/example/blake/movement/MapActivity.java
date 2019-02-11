@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,6 +31,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -49,7 +54,7 @@ public class MapActivity extends AppCompatActivity implements
         OnMyLocationClickListener,
         OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback,
-        LocationListener {
+        LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MapActivity";
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
@@ -58,6 +63,9 @@ public class MapActivity extends AppCompatActivity implements
     private GoogleMap gmap;
     private ArrayList<LatLng> cords;
     Polyline userpath;
+    GoogleApiClient mGoogleApiClient;
+    LocationRequest mLocationRequest;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +88,12 @@ public class MapActivity extends AppCompatActivity implements
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
     }
 
     @Override
@@ -87,6 +101,7 @@ public class MapActivity extends AppCompatActivity implements
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
+        Log.d(TAG, "Location changed...." + latitude+ " " + longitude);
         cords.add(latLng);
         redrawLine();
     }
@@ -99,21 +114,6 @@ public class MapActivity extends AppCompatActivity implements
             options.add(point);
         }
         userpath = gmap.addPolyline(options);
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
     }
 
     @Override
@@ -142,6 +142,8 @@ public class MapActivity extends AppCompatActivity implements
         int id = item.getItemId();
         if (id == R.id.nav_stop) {
             //TODO: Need to implement records from map. This should take user to activity which logs that record.
+            Intent toMain = new Intent(MapActivity.this, MainActivity.class);
+            startActivity(toMain);
         } else if (id == R.id.nav_logs) {
             Intent toReview = new Intent(MapActivity.this, ReviewActivity.class);
             startActivity(toReview);
@@ -151,6 +153,10 @@ public class MapActivity extends AppCompatActivity implements
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MapActivity.this, R.array.mapBackgroundOptionsArray, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mapBackgroundSpinner.setAdapter(adapter);
+            Spinner pathColorSpinner = mView.findViewById(R.id.pathColorSpinner);
+            ArrayAdapter<CharSequence> pathColorAdapter = ArrayAdapter.createFromResource(MapActivity.this, R.array.pathColorOptionsArray, android.R.layout.simple_spinner_item);
+            pathColorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            pathColorSpinner.setAdapter(pathColorAdapter);
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapActivity.this);
             mBuilder.setView(mView);
             AlertDialog liveSettingsDialog = mBuilder.create();
@@ -170,6 +176,112 @@ public class MapActivity extends AppCompatActivity implements
             outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
         }
         mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        try {
+            boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.aubergine));
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+
+    gmap = googleMap;
+    gmap.setOnMyLocationButtonClickListener(this);
+    gmap.setOnMyLocationClickListener(this);
+    enableMyLocation();
+    }
+
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        } else if (gmap != null) {
+            // Access to the location has been granted to the app.
+            buildGoogleApiClient();
+            gmap.setMyLocationEnabled(true);
+        }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .enableAutoManage(this,this)
+                .addApi(LocationServices.API)
+                .build();
+        Log.d("BuildApIClient","Connection");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            return;
+        }
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation();
+        } else {
+            // Display the missing permission error dialog when the fragments resume.
+            boolean mPermissionDenied = true;
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "onConnected - isConnected ...............: " + mGoogleApiClient.isConnected());
+        startLocationUpdates();
+    }
+
+
+    @SuppressLint("MissingPermission")
+    protected void startLocationUpdates() {
+        LocationServices.getFusedLocationProviderClient(this).getLastLocation();
+        Log.d(TAG, "Location update started ..............: ");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+
     }
 
     @Override
@@ -206,60 +318,5 @@ public class MapActivity extends AppCompatActivity implements
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        try {
-            boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.aubergine));
-            if (!success) {
-                Log.e(TAG, "Style parsing failed.");
-            }
-        } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Can't find style. Error: ", e);
-        }
-    gmap = googleMap;
-    gmap.setOnMyLocationButtonClickListener(this);
-    gmap.setOnMyLocationClickListener(this);
-    enableMyLocation();
-    }
-
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission to access the location is missing.
-            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-        } else if (gmap != null) {
-            // Access to the location has been granted to the app.
-            gmap.setMyLocationEnabled(true);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            return;
-        }
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Enable the my location layer if the permission has been granted.
-            enableMyLocation();
-        } else {
-            // Display the missing permission error dialog when the fragments resume.
-            boolean mPermissionDenied = true;
-        }
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-        return false;
-    }
-
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-
     }
 }
