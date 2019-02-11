@@ -1,28 +1,45 @@
+/*
+ *Permission functions and map location adapted from:
+ *https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/main/java/com/example/mapdemo/MyLocationDemoActivity.java
+ */
+
 package com.example.blake.movement;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.support.v4.app.ActivityCompat;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 
-public class MapActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        OnMyLocationButtonClickListener,
+        OnMyLocationClickListener,
+        OnMapReadyCallback,
+        ActivityCompat.OnRequestPermissionsResultCallback {
+
     private static final String TAG = "MapActivity";
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private MapView mapView;
+    private GoogleMap gmap;
+    private boolean mPermissionDenied = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,11 +162,52 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         mapView.onLowMemory();
     }
 
-    //TODO: Optimize zoom levels to mimic other map applications.
+    @SuppressLint("MissingPermission") // Do not need because we already ensure the user enables permissions in enableMyLocation()
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        GoogleMap gmap = googleMap;
-        LatLng hendrix = new LatLng(35.0992517, -92.44182340);
-        gmap.moveCamera(CameraUpdateFactory.newLatLng(hendrix));
+        gmap = googleMap;
+        gmap.setOnMyLocationButtonClickListener(this);
+        gmap.setOnMyLocationClickListener(this);
+        enableMyLocation();
+
+    }
+
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        } else if (gmap != null) {
+            // Access to the location has been granted to the app.
+            gmap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            return;
+        }
+
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation();
+        } else {
+            // Display the missing permission error dialog when the fragments resume.
+            mPermissionDenied = true;
+        }
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+
     }
 }
