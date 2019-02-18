@@ -150,17 +150,28 @@ public class MapActivity extends AppCompatActivity implements
             startActivity(toReview);
         } else if (id == R.id.nav_liveOptions) {
             View mView = getLayoutInflater().inflate(R.layout.activity_options, null);
+
             Spinner mapBackgroundSpinner = mView.findViewById(R.id.mapBackgroundSpinner);
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MapActivity.this, R.array.mapBackgroundOptionsArray, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mapBackgroundSpinner.setAdapter(adapter);
+
             Spinner pathColorSpinner = mView.findViewById(R.id.pathColorSpinner);
             ArrayAdapter<CharSequence> pathColorAdapter = ArrayAdapter.createFromResource(MapActivity.this, R.array.pathColorOptionsArray, android.R.layout.simple_spinner_item);
             pathColorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             pathColorSpinner.setAdapter(pathColorAdapter);
+
+            Button toGPS = mView.findViewById(R.id.toGPS);
+            toGPS.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent GPSIntent = new Intent(MapActivity.this, MapActivity.class);
+                    startActivity(GPSIntent);
+                }
+            });
+
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapActivity.this);
             mBuilder.setView(mView);
-            Button toGPS = mView.findViewById(R.id.toGPS);
             AlertDialog liveSettingsDialog = mBuilder.create();
             liveSettingsDialog.show();
 
@@ -174,10 +185,12 @@ public class MapActivity extends AppCompatActivity implements
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+
         if (mapViewBundle == null) {
             mapViewBundle = new Bundle();
             outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
         }
+
         mapView.onSaveInstanceState(mapViewBundle);
     }
 
@@ -192,7 +205,6 @@ public class MapActivity extends AppCompatActivity implements
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
-
     gmap = googleMap;
     gmap.setOnMyLocationButtonClickListener(this);
     gmap.setOnMyLocationClickListener(this);
@@ -202,11 +214,9 @@ public class MapActivity extends AppCompatActivity implements
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Permission to access the location is missing.
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
         } else if (gmap != null) {
-            // Access to the location has been granted to the app.
             buildGoogleApiClient();
             gmap.setMyLocationEnabled(true);
         }
@@ -231,7 +241,6 @@ public class MapActivity extends AppCompatActivity implements
         }
         if (PermissionUtils.isPermissionGranted(permissions, grantResults,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Enable the my location layer if the permission has been granted.
             enableMyLocation();
         } else {
             // Display the missing permission error dialog when the fragments resume.

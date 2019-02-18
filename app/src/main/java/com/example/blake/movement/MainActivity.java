@@ -19,16 +19,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
 
         Button collectButton = findViewById(R.id.collectButton);
         Button reviewButton = findViewById(R.id.reviewButton);
-        final View mView = getLayoutInflater().inflate(R.layout.settings_dialogue, null);
         Button toGPSButton =  mView.findViewById(R.id.toGPSButton);
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+
         final Spinner manualOrDefaultSpinner = mView.findViewById(R.id.manualOrDefaultSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MainActivity.this, R.array.manualOrDefaultArray, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         manualOrDefaultSpinner.setAdapter(adapter);
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
         mBuilder.setView(mView);
         final AlertDialog manualOrDefaultDialog = mBuilder.create();
 
