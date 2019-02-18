@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -159,8 +160,10 @@ public class MapActivity extends AppCompatActivity implements
             pathColorSpinner.setAdapter(pathColorAdapter);
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MapActivity.this);
             mBuilder.setView(mView);
+            Button toGPS = mView.findViewById(R.id.toGPS);
             AlertDialog liveSettingsDialog = mBuilder.create();
             liveSettingsDialog.show();
+
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
